@@ -46,6 +46,9 @@ struct CardContentOptions: ParsableArguments {
     @Option(help: help("auto, light or dark.", "theme"))
     var theme: String?
 
+    @Option(help: help("classic, or drop: compressed black caps, square card, thick ink edge, hard shadow.", "look"))
+    var look: String?
+
     @Flag(help: "Speak the title with macOS 'say'.")
     var say = false
 
@@ -90,11 +93,13 @@ enum CardFlags {
         document.app = options.app ?? document.app
         document.color = options.color ?? document.color
         document.theme = options.theme ?? document.theme
+        document.look = options.look ?? document.look
         if options.say { document.say = true }
         if options.keep { document.keep = true }
         try document.validate()
         try document.checkSecretSources()
         if let color = document.color { _ = try ArrowColor.parse(color) }
+        if let look = document.look { _ = try ArrowLook.parse(look) }
         return document
     }
 

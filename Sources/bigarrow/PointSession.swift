@@ -59,6 +59,7 @@ final class PointSession {
         if let home = config.home { binder = HomeBinder(session: self, app: home.app) }
         watchOwner()
         if config.say { DispatchQueue.main.async { MainActor.assumeIsolated { self.speak() } } }
+        if config.sound { HitSound.play(look: config.look, mode: AnimationMode.resolve(disabled: config.noAnimation)) }
     }
 
     /// The arrow is hidden while any reason holds, and shown again when none does.

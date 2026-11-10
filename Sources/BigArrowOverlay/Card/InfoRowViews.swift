@@ -90,10 +90,10 @@ final class ProgressBar: NSView {
 
     override func draw(_ dirtyRect: NSRect) {
         let radius = bounds.height / 2
-        style.tint.withAlphaComponent(0.18).setFill()
+        style.accent.withAlphaComponent(0.18).setFill()
         NSBezierPath(roundedRect: bounds, xRadius: radius, yRadius: radius).fill()
         let filled = NSRect(x: 0, y: 0, width: max(bounds.height, bounds.width * fraction), height: bounds.height)
-        style.tint.setFill()
+        style.accent.setFill()
         NSBezierPath(roundedRect: filled, xRadius: radius, yRadius: radius).fill()
     }
 }
@@ -118,7 +118,7 @@ final class FileRowView: NSView, NSDraggingSource {
         name.lineBreakMode = .byTruncatingMiddle
         let size = ByteCountFormatter.string(fromByteCount: Self.size(of: url), countStyle: .file)
         let hint = CardStyle.label("\(size) - drag it where it goes", font: CardStyle.detailFont, color: .secondaryLabelColor)
-        let reveal = ActionButton(icon: .file, tint: style.tint, tooltip: "Show in Finder") { [weak self] in
+        let reveal = ActionButton(icon: .file, tint: style.accent, tooltip: "Show in Finder") { [weak self] in
             guard let self else { return }
             NSWorkspace.shared.activateFileViewerSelecting([self.url])
         }

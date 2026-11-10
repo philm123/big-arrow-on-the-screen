@@ -12,9 +12,9 @@ metadata:
 `bigarrow` draws a click-through arrow with a sign, needs no permission and never takes the
 focus. Point at the thing itself, a line in the terminal is easy to miss.
 
-Needs bigarrow 0.5.1 or newer. If `bigarrow --version` prints an older one, run
-`brew upgrade franzenzenhofer/tap/bigarrow` first: an old binary has no `card` and prints
-`{{value}}` as plain text.
+Needs bigarrow 0.6.0 or newer. If `bigarrow --version` prints an older one, build
+philm123/big-arrow-on-the-screen (`swift build -c release`) first: an old binary has no
+`--look drop`, no `card` and prints `{{value}}` as plain text.
 
 ```bash
 open "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture"
@@ -36,6 +36,9 @@ bigarrow stop
   `{{value}}`. The human sees the value on a copy button (no braces); one click copies all of it
   and the arrow stays. Point at where it goes: "Franz, copy {{sudo xcodebuild -license accept}}
   and paste it here", then check that it was pasted.
+- `--look drop` on `point`, `start` and `card` for the heavy streetwear look: compressed caps, a
+  thick ink edge, a hard shadow, a slam-in. Colorways: `--color acid|flare|cobalt|ink|cement|gum`
+  (acid by default). `--sound` plays a short hit as the arrow lands.
 - One arrow per step; `bigarrow stop` the moment the step is done. Arrows also end alone: after
   300 s, when your session exits, when the human answers (hook below).
 - A click on the sign or shaft, except a copy button, removes the arrow (target clicks pass

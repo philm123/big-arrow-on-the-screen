@@ -38,7 +38,7 @@ final class CardSession {
 
     init(document: CardDocument, base: PlannedArrow?, replyTarget: CardReplyTarget, raise: Bool) throws {
         self.document = document
-        let colorName = document.color ?? "red"
+        let colorName = document.colorName
         color = try ArrowColor.parse(colorName)
         arrows = try CardArrows(document: document, color: colorName, raise: raise)
         arrows.base = base

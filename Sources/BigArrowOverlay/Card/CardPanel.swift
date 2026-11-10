@@ -33,7 +33,8 @@ final class CardPanel: NSPanel {
     init(view: CardView, origin: CGPoint, acceptsTyping: Bool) {
         let hidden = view.document.hasSecret
         self.acceptsTyping = acceptsTyping
-        let size = view.fittingSize
+        let inset = view.style.shadowInset
+        let size = CGSize(width: view.fittingSize.width + inset, height: view.fittingSize.height + inset)
         super.init(
             contentRect: CGRect(origin: origin, size: size), styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered, defer: false
@@ -45,12 +46,12 @@ final class CardPanel: NSPanel {
         collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .ignoresCycle]
         isOpaque = false
         backgroundColor = .clear
-        hasShadow = true
+        hasShadow = inset == 0
         isMovableByWindowBackground = true
         isReleasedWhenClosed = false
         animationBehavior = .utilityWindow
         sharingType = hidden ? .none : .readOnly
-        contentView = view
+        contentView = DropCard.wrap(view)
         setFrameOrigin(origin)
     }
 
@@ -72,11 +73,14 @@ public final class CardController {
         self.view = view
     }
 
-    /// The card's size in points, after layout.
-    public var size: CGSize { view.fittingSize }
+    /// The card's size in points, after layout, with the Drop look's hard shadow.
+    public var size: CGSize {
+        let inset = view.style.shadowInset
+        return CGSize(width: view.fittingSize.width + inset, height: view.fittingSize.height + inset)
+    }
 
     public func show(at topLeft: CGPoint, theme: String?) {
-        view.appearance = Self.appearance(theme)
+        view.appearance = view.style.isDrop ? NSAppearance(named: .aqua) : Self.appearance(theme)
         let typing = view.document.rows.contains { $0.type == .input }
         let primaryHeight = NSScreen.screens.first?.frame.height ?? 0
         let frame = ScreenSpace.flip(CGRect(origin: topLeft, size: size), primaryHeight: primaryHeight)
@@ -104,7 +108,7 @@ public final class CardController {
         view.showSent(text)
         guard let panel else { return }
         view.layoutSubtreeIfNeeded()
-        let size = view.fittingSize
+        let size = self.size
         var frame = panel.frame
         frame.origin.y += frame.height - size.height
         frame.size = size
@@ -113,6 +117,7 @@ public final class CardController {
             frame.origin.y = visible.minY + CardPlacement.margin
         }
         panel.setFrame(frame, display: true)
+        DropCard.layout(view)
     }
 
     public func close() {

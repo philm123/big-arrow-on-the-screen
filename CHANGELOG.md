@@ -4,6 +4,14 @@ All notable changes to this project are documented here. Format: [Keep a Changel
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-11-10 (fork: philm123/big-arrow-on-the-screen)
+
+### Added
+- `--look drop` for `point`, `start` and `card` (and `"look": "drop"` in a card): compressed black caps (SF Pro Compressed Black), square signs, a 5 pt ink edge, one hard unblurred shadow under sign and arrow, square caps and miter joins. The sign slams in with a twist, the head stamps down, the overlay kicks once and an ink splat bursts at the tip. Cards get paper, an ink frame and rule, flush-left caps, square buttons and a hard shadow; a card's row arrows take its look.
+- Six colorways for any look: `acid` (Drop's default), `flare`, `cobalt`, `ink`, `cement`, `gum`. The edge is ink, acid on colours too dark for ink.
+- `--sound`: a short hit, synthesized in memory, as the arrow lands.
+- `scripts/drop-renders.sh`: every colorway, shape, style and three cards, rendered offscreen.
+
 ### Changed
 - README: "Funny cue cards", six real on-screen scenes (buttons, a choice, a question, a checklist, a row arrow, copy buttons), re-created by `scripts/card-scenes.sh`.
 

@@ -70,7 +70,9 @@ public struct ArrowColor: Equatable, Sendable, Codable {
     public static let presets: [(name: String, hex: String)] = [
         ("red", "FF3B1F"), ("orange", "FF8A00"), ("yellow", "FFD60A"), ("green", "21B24B"),
         ("teal", "00B5AD"), ("blue", "0A84FF"), ("purple", "8E44FF"), ("pink", "FF2D78"),
-        ("black", "1C1C1E"), ("white", "FFFFFF")
+        ("black", "1C1C1E"), ("white", "FFFFFF"),
+        // The Drop colorways.
+        ("acid", "D4FF00"), ("flare", "FF3B1F"), ("cobalt", "1A3CFF"), ("ink", "0B0B0B"), ("cement", "B9B8B2"), ("gum", "C9925A")
     ]
 
     public static var accepted: String {

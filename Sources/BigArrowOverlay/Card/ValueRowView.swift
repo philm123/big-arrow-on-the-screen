@@ -49,16 +49,16 @@ final class ValueRowView: NSView {
     func build() {
         var buttons: [NSView] = []
         if row.isMasked {
-            let eye = ActionButton(icon: .eye, tint: style.tint, tooltip: "Show \(row.name)") { [weak self] in self?.toggleReveal() }
+            let eye = ActionButton(icon: .eye, tint: style.accent, tooltip: "Show \(row.name)") { [weak self] in self?.toggleReveal() }
             self.eye = eye
             buttons.append(eye)
         }
         if row.type == .link, let url = row.url {
-            buttons.append(ActionButton(icon: .externalLink, tint: style.tint, tooltip: "Open \(row.name)") { [weak self] in
+            buttons.append(ActionButton(icon: .externalLink, tint: style.accent, tooltip: "Open \(row.name)") { [weak self] in
                 self?.events.open(url)
             })
         }
-        let copy = ActionButton(icon: .copy, tint: style.tint, tooltip: "Copy \(row.name)") { [weak self] in self?.copyValue() }
+        let copy = ActionButton(icon: .copy, tint: style.accent, tooltip: "Copy \(row.name)") { [weak self] in self?.copyValue() }
         copyButton = copy
         buttons.append(copy)
         let line = Stack.horizontal([valueLabel, NSView()] + buttons, spacing: 4)
@@ -104,7 +104,7 @@ final class ValueRowView: NSView {
             CardMotion.pop(copyButton)
             CardMotion.toast(row.isMasked || totp != nil ? "Copied, gone in 30 s" : "Copied", above: copyButton, style: style)
         }
-        CardMotion.flash(self, color: style.tint)
+        CardMotion.flash(self, color: style.accent)
         if let point = row.point { events.activate(point, row.name) }
     }
 

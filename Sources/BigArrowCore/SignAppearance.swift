@@ -31,6 +31,8 @@ public struct SignAppearance: Sendable {
     public let size: ArrowSize
     public let corners: SignCorners
     public var border = ArrowBorder.shadow
+    /// `--look`: classic, or drop with its ink edge, hard shadow and compressed caps.
+    public var look = ArrowLook.classic
     public var closeMark = CloseMark.none
     /// `--border-color`, `--text-color`, `--edge-color`; nil picks a readable colour automatically.
     public var borderColor: ArrowColor?
@@ -38,7 +40,8 @@ public struct SignAppearance: Sendable {
     public var edgeColor: ArrowColor?
 
     /// The border: white on dark arrows, dark on light ones, unless set.
-    public var borderTint: ArrowColor { borderColor ?? color.contrast }
+    /// In the Drop look the border is the ink edge (acid on near-black colours).
+    public var borderTint: ArrowColor { borderColor ?? (look == .drop ? DropInk.edge(for: color) : color.contrast) }
     public var textTint: ArrowColor { textColor ?? color.contrast }
     /// The thin line: black (white for `--border black` on near-black arrows), unless set.
     public var edgeTint: ArrowColor { edgeColor ?? (border == .black ? color.outline : .black) }
