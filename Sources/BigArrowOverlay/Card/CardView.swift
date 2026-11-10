@@ -135,7 +135,7 @@ final class RowContainer: NSView {
         self.events = events
         super.init(frame: .zero)
         accent.wantsLayer = true
-        accent.layer?.backgroundColor = style.tint.cgColor
+        accent.layer?.backgroundColor = style.accent.cgColor
         accent.layer?.cornerRadius = CardStyle.accentWidth / 2
         accent.isHidden = true
         RowLayout.fill(self, with: content, horizontal: CardStyle.padding)

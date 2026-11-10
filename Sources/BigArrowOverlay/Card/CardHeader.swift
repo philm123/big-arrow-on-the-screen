@@ -14,7 +14,8 @@ final class CardHeader: NSView {
         wantsLayer = true
         layer?.backgroundColor = style.tint.cgColor
         let side = Self.corner + CardStyle.iconButton + 10
-        let label = CardStyle.label("", font: style.titleFont, width: CardStyle.width - side * 2)
+        let lead = style.isDrop ? CardStyle.padding : side
+        let label = CardStyle.label("", font: style.titleFont, width: CardStyle.width - lead - side)
         label.attributedStringValue = Self.title(title, style: style)
         let button = ActionButton(icon: .close, tint: style.tint, tooltip: "Close") { close() }
         button.wantsLayer = true
@@ -23,7 +24,7 @@ final class CardHeader: NSView {
         if style.isDrop { Self.underline(self, style: style) }
         [label, button].forEach { $0.translatesAutoresizingMaskIntoConstraints = false; addSubview($0) }
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: side),
+            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: lead),
             label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -side),
             label.topAnchor.constraint(equalTo: topAnchor, constant: Self.vertical),
             label.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Self.vertical),

@@ -25,6 +25,8 @@ public struct CardStyle {
     }
 
     var isDrop: Bool { look == .drop }
+    /// Icons, outlines and labels on the card body: the card colour, ink on the Drop look's paper.
+    var accent: NSColor { isDrop ? edge : tint }
     /// Corner radius, border width and colour of the card and its buttons.
     var corner: CGFloat { isDrop ? 0 : Self.corner }
     var border: CGFloat { isDrop ? DropInk.edge : Self.border }

@@ -47,10 +47,10 @@ final class OptionView: NSView {
         self.style = style
         super.init(frame: .zero)
         wantsLayer = true
-        layer?.cornerRadius = 10
+        layer?.cornerRadius = style.isDrop ? 0 : 10
         layer?.borderWidth = 2
-        layer?.borderColor = style.tint.cgColor
-        var lines: [NSView] = [CardStyle.label(item.label, font: CardStyle.buttonFont, color: style.tint)]
+        layer?.borderColor = style.accent.cgColor
+        var lines: [NSView] = [CardStyle.label(item.label, font: CardStyle.buttonFont, color: style.accent)]
         if let detail = item.detail { lines.append(CardStyle.label(detail, font: CardStyle.detailFont, color: .secondaryLabelColor)) }
         let stack = Stack.vertical(lines, spacing: 2)
         stack.edgeInsets = NSEdgeInsets(top: 10, left: 14, bottom: 10, right: 14)
@@ -78,13 +78,13 @@ final class OptionView: NSView {
 
     /// The option that was picked: filled with a stronger wash and a thicker border.
     func markChosen() {
-        layer?.backgroundColor = style.tint.withAlphaComponent(0.2).cgColor
+        layer?.backgroundColor = style.accent.withAlphaComponent(0.2).cgColor
         layer?.borderWidth = 3
     }
 
     override func mouseEntered(with event: NSEvent) {
         guard isAnswerable else { return }
-        layer?.backgroundColor = style.tint.withAlphaComponent(0.12).cgColor
+        layer?.backgroundColor = style.accent.withAlphaComponent(0.12).cgColor
     }
 
     override func mouseExited(with event: NSEvent) {
@@ -165,7 +165,7 @@ final class ChecklistRowView: NSView {
         self.events = events
         super.init(frame: .zero)
         let lines = (row.items ?? []).map { item -> NSView in
-            let box = ActionButton(icon: .square, tint: style.tint, tooltip: "Tick \(item.label)") { [weak self] in self?.toggle(item.id) }
+            let box = ActionButton(icon: .square, tint: style.accent, tooltip: "Tick \(item.label)") { [weak self] in self?.toggle(item.id) }
             boxes[item.id] = box
             let text = CardStyle.label(item.label, font: CardStyle.bodyFont)
             return Stack.horizontal([box, text], spacing: 6)
@@ -186,7 +186,7 @@ final class ChecklistRowView: NSView {
         boxes[id]?.image = CardStyle.icon(checked.contains(id) ? .checkSquare : .square)
         if let box = boxes[id] {
             CardMotion.pop(box)
-            if let line = box.superview { CardMotion.flash(line, color: style.tint) }
+            if let line = box.superview { CardMotion.flash(line, color: style.accent) }
         }
         events.checked(checked)
         if checked.count == items.count {
