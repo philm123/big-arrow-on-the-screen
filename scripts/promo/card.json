@@ -1,0 +1,9 @@
+{
+  "title": "4. Copy it. Paste it in.",
+  "look": "drop",
+  "rows": [
+    {"type": "field", "label": "API key", "value": "orb_live_7Hq2Xk9PmR4t"},
+    {"type": "field", "label": "Goes in", "value": "Settings > Integrations"},
+    {"type": "actions", "items": [{"id": "done", "label": "Pasted it"}]}
+  ]
+}

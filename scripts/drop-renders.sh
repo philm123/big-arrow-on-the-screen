@@ -24,4 +24,12 @@ run "$BIN" point --at 760,460 --from right --text "Click. This." --png "$OUT/cla
 for card in 01-login 09-choice 11-checklist; do
   run "$BIN" card "docs/cards/$card.json" --look drop --png "$OUT/card-$card.png"
 done
+# Promo shots: --json records each PNG's top-left in global points, so a video can put the target
+# exactly where its mock UI has it.
+P="$OUT/promo"; mkdir -p "$P"
+shot() { name=$1; shift; "$BIN" point --look drop --json "$@" --png "$P/$name.png" > "$P/$name.json" 2>> "$OUT/errors.txt" || fail=1; }
+shot a-gear --at 1300,300 --from bottom-left --size L --text "1. Settings. Top right."
+shot b-nav --at 500,520 --from right --shape zigzag --color flare --text "2. Not General. Keys."
+shot c-create --rect 1000,500,260,70 --style box --from bottom-left --color cobalt --text "3. This one. Create."
+run "$BIN" card scripts/promo/card.json --png "$P/d-card.png"
 exit $fail
