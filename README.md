@@ -1,4 +1,47 @@
-# Let your AI agents paint big arrows, boxes and text on your screen
+# bigarrow, Drop edition
+
+**Your agent points. Now it points loud.** A heavy streetwear look for [big-arrow-on-the-screen](https://github.com/franzenzenhofer/big-arrow-on-the-screen), Franz Enzenhofer's macOS tool that lets AI agents draw arrows, signs and cue cards on your screen. One flag.
+
+![A Drop arrow in acid with the sign READ THIS FIRST, and a Drop cue card asking which header you want](docs/images/drop/hero-drop.png)
+
+```bash
+bigarrow point --mouse --look drop --sound --text "Click. This."
+```
+
+## What `--look drop` does
+
+- **Signs:** compressed black caps, square corners, a thick ink edge, one hard shadow with no blur.
+- **Arrows:** square ends, miter joins, the same hard shadow. The sign slams in with a twist, the head stamps down, the screen kicks once and an ink splat bursts at the target.
+- **Cue cards:** paper, an ink frame, flush-left caps, square buttons, a hard shadow. `--look drop` on `card`, or `"look": "drop"` in the JSON.
+- **`--sound`:** a short hit as the arrow lands. Synthesized in memory, no sound file.
+
+### Six colorways
+
+`--color acid|flare|cobalt|ink|cement|gum`. Acid is the default. They work with the classic look too.
+
+![The same Drop arrow, CLICK. THIS., in acid, flare, cobalt, ink, cement and gum](docs/images/drop/colorways.png)
+
+### Cards
+
+![Three Drop cue cards: a login with copy buttons, a choice of three headers, a checklist](docs/images/drop/cards-drop.png)
+
+## Install this fork
+
+```bash
+git clone https://github.com/philm123/big-arrow-on-the-screen.git && cd big-arrow-on-the-screen
+swift build -c release && ln -sf "$PWD/.build/release/bigarrow" /opt/homebrew/bin/bigarrow
+bigarrow install-skill
+```
+
+`scripts/drop-renders.sh .build/release/bigarrow /tmp/drop` renders every colorway, shape, style and three cards offscreen. Nothing is drawn on screen.
+
+## Credit
+
+Every arrow, card, permission rule and test underneath is Franz's work. This fork adds a look. MIT, same as the original. The original README follows.
+
+---
+
+# The original: let your AI agents paint big arrows, boxes and text on your screen
 
 **big-arrow-on-the-screen** (`bigarrow`) is a macOS command-line tool, plus a skill for Claude Code and Codex, that draws an arrow and a sign on top of every window. Clicks go through, your keyboard focus stays put, and the arrow removes itself. MIT licensed.
 
