@@ -74,17 +74,19 @@ final class PillButton: NSButton {
         self.init(frame: .zero)
         isBordered = false
         wantsLayer = true
-        layer?.cornerRadius = 10
-        layer?.borderWidth = primary ? 0 : 2
-        layer?.borderColor = style.tint.cgColor
+        layer?.cornerRadius = style.isDrop ? 0 : 10
+        layer?.borderWidth = style.isDrop ? 3 : (primary ? 0 : 2)
+        layer?.borderColor = (style.isDrop ? style.edge : style.tint).cgColor
         layer?.backgroundColor = primary ? style.tint.cgColor : NSColor.clear.cgColor
-        attributedTitle = NSAttributedString(string: title, attributes: [
-            .font: CardStyle.buttonFont, .foregroundColor: primary ? style.onTint : style.tint
-        ])
+        let ink = style.isDrop && !primary ? style.edge : (primary ? style.onTint : style.tint)
+        attributedTitle = NSAttributedString(string: style.cased(title), attributes: [.font: style.buttonFont, .foregroundColor: ink])
+        if style.isDrop { DropCard.hardShadow(self, style: style, offset: 4) }
         setAccessibilityLabel(title)
         self.handler = handler
         self.primary = primary
         self.tint = style.tint
+        self.font = style.buttonFont
+        chosenText = style.isDrop ? style.onTint : .white
         target = self
         action = #selector(run)
         translatesAutoresizingMaskIntoConstraints = false
@@ -94,6 +96,8 @@ final class PillButton: NSButton {
 
     private var primary = false
     private var tint = NSColor.systemRed
+    /// The picked answer's text: white, the contrast colour in the Drop look.
+    private var chosenText = NSColor.white
     /// False once its question is answered. The button stays enabled: a disabled button draws its
     /// title in the system's disabled colour, which would hide the picked answer.
     var isAnswerable = true
@@ -118,7 +122,8 @@ final class PillButton: NSButton {
     /// The answer that was given: filled, whatever it looked like before.
     func markChosen() {
         layer?.backgroundColor = tint.cgColor
-        attributedTitle = NSAttributedString(string: title, attributes: [.font: CardStyle.buttonFont, .foregroundColor: NSColor.white])
+        let attributes: [NSAttributedString.Key: Any] = [.font: font ?? CardStyle.buttonFont, .foregroundColor: chosenText]
+        attributedTitle = NSAttributedString(string: attributedTitle.string, attributes: attributes)
     }
 
     override var intrinsicContentSize: NSSize {

@@ -1,4 +1,5 @@
 import AppKit
+import BigArrowCore
 
 /// How the arrow enters and leaves.
 public enum AnimationMode: Sendable, Equatable {
@@ -40,6 +41,7 @@ enum Animator {
     }
 
     private static func full(_ layers: OverlayLayers) {
+        if layers.look == .drop { return drop(layers) }
         let now = CACurrentMediaTime()
         for shaft in layers.shaftLayers {
             let draw = CABasicAnimation(keyPath: "strokeEnd")
@@ -61,7 +63,7 @@ enum Animator {
         pulse(layers.markGroup, begin: now + drawOn + 0.5)
     }
 
-    private static func spring(_ layer: CALayer, from scale: CGFloat, begin: CFTimeInterval) {
+    static func spring(_ layer: CALayer, from scale: CGFloat, begin: CFTimeInterval) {
         let spring = CASpringAnimation(keyPath: "transform.scale")
         spring.fromValue = scale
         spring.toValue = 1
@@ -74,7 +76,7 @@ enum Animator {
         layer.add(spring, forKey: "springIn")
     }
 
-    private static func pulse(_ layer: CALayer, begin: CFTimeInterval) {
+    static func pulse(_ layer: CALayer, begin: CFTimeInterval) {
         let pulse = CABasicAnimation(keyPath: "transform.scale")
         pulse.fromValue = 1
         pulse.toValue = pulseScale

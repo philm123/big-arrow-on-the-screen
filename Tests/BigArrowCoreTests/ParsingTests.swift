@@ -40,7 +40,7 @@ struct ParsingTests {
     @Test("Every preset parses, and light colours get a dark outline and text", arguments: ArrowColor.presets.map(\.name))
     func presets(name: String) throws {
         let color = try ArrowColor.parse(name)
-        let expectDark = ["yellow", "white"].contains(name)
+        let expectDark = ["yellow", "white", "acid", "cement", "gum"].contains(name)
         #expect(color.isLight == expectDark)
         #expect(color.contrast.isLight == !expectDark)
     }

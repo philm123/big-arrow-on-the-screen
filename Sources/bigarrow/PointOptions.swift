@@ -66,8 +66,14 @@ struct LookOptions: ParsableArguments {
     @Option(help: help("arrow, ring or box.", "style"))
     var style = "arrow"
 
-    @Option(help: help("red, orange, yellow, green, teal, blue, purple, pink, black, white, or hex like #FF3B1F / #F31.", "colour"))
-    var color = "red"
+    @Option(help: help(
+        "red, orange, yellow, green, teal, blue, purple, pink, black, white, the Drop colorways acid, flare, cobalt, ink, "
+            + "cement, gum, or hex like #FF3B1F / #F31 (default red, acid with --look drop).", "colour"
+    ))
+    var color: String?
+
+    @Option(help: help("classic, or drop: compressed black caps, square sign, thick ink edge, hard shadow, slam-in.", "look"))
+    var look = "classic"
 
     @Option(name: .customLong("border-color"), help: help("Border colour (default: white, dark on light arrows).", "colour"))
     var borderColor: String?
@@ -87,8 +93,8 @@ struct LookOptions: ParsableArguments {
     @Option(help: help("Shaft shape: bend, straight, zigzag or spiral (once around the sign, then to the target).", "shape"))
     var shape = "bend"
 
-    @Option(help: help("Sign corners: round or sharp.", "corners"))
-    var corners = "round"
+    @Option(help: help("Sign corners: round or sharp (default round, sharp with --look drop).", "corners"))
+    var corners: String?
 
     @Option(help: help(
         "shadow (white border and drop shadow), white-black (white border, thin black edge) or black (thin black outline).",
@@ -118,6 +124,9 @@ struct BehaviourOptions: ParsableArguments {
 
     @Flag(help: "Speak the sign with macOS 'say', for when the human is not looking.")
     var say = false
+
+    @Flag(help: "Play a short hit as the arrow lands.")
+    var sound = false
 
     @Option(help: help("Voice for --say (see 'say -v ?').", "voice"))
     var voice: String?

@@ -36,7 +36,7 @@ public enum CardClipboard {
 @MainActor
 public enum CardPNG {
     public static func write(_ view: CardView, theme: String?, scale: CGFloat, to url: URL) throws {
-        view.appearance = CardController.appearance(theme) ?? NSAppearance(named: .aqua)
+        view.appearance = view.style.isDrop ? NSAppearance(named: .aqua) : CardController.appearance(theme) ?? NSAppearance(named: .aqua)
         let size = view.fittingSize
         view.frame = CGRect(origin: .zero, size: size)
         view.layoutSubtreeIfNeeded()
@@ -45,7 +45,7 @@ public enum CardPNG {
             throw BigArrowError.badInput("cannot render the card (\(Int(size.width))x\(Int(size.height)))")
         }
         view.cacheDisplay(in: view.bounds, to: rep)
-        let image = try scaled(rep, scale: scale)
+        let image = try scaled(rep, scale: scale, style: view.style)
         guard let destination = CGImageDestinationCreateWithURL(url as CFURL, UTType.png.identifier as CFString, 1, nil) else {
             throw BigArrowError.badInput("cannot write a PNG to \(url.path)")
         }
@@ -54,16 +54,17 @@ public enum CardPNG {
     }
 
     /// The cached bitmap at `scale` pixels per point, with the card's rounded corners transparent.
-    static func scaled(_ rep: NSBitmapImageRep, scale: CGFloat) throws -> CGImage {
+    static func scaled(_ rep: NSBitmapImageRep, scale: CGFloat, style: CardStyle) throws -> CGImage {
         let size = rep.size
-        let canvas = Canvas(size: size, scale: scale)
+        let inset = style.shadowInset
+        let canvas = Canvas(size: CGSize(width: size.width + inset, height: size.height + inset), scale: scale)
         return canvas.render { context in
-            let path = CGPath(roundedRect: CGRect(origin: .zero, size: size), cornerWidth: CardStyle.corner,
-                              cornerHeight: CardStyle.corner, transform: nil)
-            context.addPath(path)
+            if inset > 0 { DropCard.drawShadow(in: context, size: size, style: style) }
+            let card = CGRect(origin: CGPoint(x: 0, y: inset), size: size)
+            context.addPath(CGPath(roundedRect: card, cornerWidth: style.corner, cornerHeight: style.corner, transform: nil))
             context.clip()
             guard let image = rep.cgImage else { return }
-            context.draw(image, in: CGRect(origin: .zero, size: size))
+            context.draw(image, in: card)
         }
     }
 }

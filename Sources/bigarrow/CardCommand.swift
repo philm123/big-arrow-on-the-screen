@@ -87,7 +87,7 @@ struct CardCommand: ParsableCommand {
     @MainActor
     func render(_ document: CardDocument, to path: String) throws {
         OverlayApplication.prepare()
-        let view = try CardView(document: document, color: try ArrowColor.parse(document.color ?? "red"),
+        let view = try CardView(document: document, color: try ArrowColor.parse(document.colorName),
                                 events: CardEvents(), maxHeight: .greatestFiniteMagnitude)
         try CardPNG.write(view, theme: document.theme, scale: 2, to: URL(fileURLWithPath: path))
         let size = view.fittingSize

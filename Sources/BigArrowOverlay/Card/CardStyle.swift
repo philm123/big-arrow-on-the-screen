@@ -6,6 +6,8 @@ import BigArrowCore
 @MainActor
 public struct CardStyle {
     public let color: ArrowColor
+    /// classic, or drop: square, a thick ink edge, paper, a hard shadow and compressed caps.
+    public let look: ArrowLook
 
     public static let width: CGFloat = 440
     static let padding: CGFloat = 22
@@ -17,9 +19,22 @@ public struct CardStyle {
     static let accentWidth: CGFloat = 5
     static let maximumHeightShare: CGFloat = 0.8
 
-    public init(color: ArrowColor) {
+    public init(color: ArrowColor, look: ArrowLook = .classic) {
         self.color = color
+        self.look = look
     }
+
+    var isDrop: Bool { look == .drop }
+    /// Corner radius, border width and colour of the card and its buttons.
+    var corner: CGFloat { isDrop ? 0 : Self.corner }
+    var border: CGFloat { isDrop ? DropInk.edge : Self.border }
+    var edge: NSColor { isDrop ? Self.nsColor(DropInk.edge(for: color)) : onTint }
+    /// How far the hard shadow reaches right and down; the card's window is this much larger.
+    var shadowInset: CGFloat { isDrop ? DropInk.shadow : 0 }
+    var titleFont: NSFont { isDrop ? SignRenderer.font(42, look: .drop) : Self.titleFont }
+    var buttonFont: NSFont { isDrop ? SignRenderer.font(24, look: .drop) : Self.buttonFont }
+    /// Drop titles and buttons are set in capitals.
+    func cased(_ text: String) -> String { isDrop ? text.uppercased() : text }
 
     var tint: NSColor { Self.nsColor(color) }
     var onTint: NSColor { Self.nsColor(color.contrast) }

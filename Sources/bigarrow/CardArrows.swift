@@ -21,7 +21,9 @@ final class CardArrows {
         self.document = document
         self.color = color
         self.raise = raise
-        let appearance = SignAppearance(color: try ArrowColor.parse(color), size: .medium, corners: .round)
+        let look = document.arrowLook
+        var appearance = SignAppearance(color: try ArrowColor.parse(color), size: .medium, corners: try .parse(look.defaultCorners))
+        appearance.look = look
         overlay = OverlayController(mode: AnimationMode.resolve(disabled: false), appearance: appearance)
         overlay.dismissOnClick { [weak self] in self?.hide() }
     }
@@ -41,7 +43,7 @@ final class CardArrows {
         do {
             return try PointConfig(
                 target: TargetOptions.parse(point.targetArguments(defaultApp: document.app)),
-                look: LookOptions.parse(["--text", text, "--color", color]),
+                look: LookOptions.parse(["--text", text, "--color", color, "--look", document.arrowLook.rawValue]),
                 behaviour: BehaviourOptions.parse([]), mode: .foreground
             )
         } catch let error as BigArrowError {

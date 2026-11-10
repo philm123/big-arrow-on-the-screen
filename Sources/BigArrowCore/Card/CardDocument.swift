@@ -12,6 +12,8 @@ public struct CardDocument: Codable, Equatable, Sendable {
     public var color: String?
     /// auto, light or dark.
     public var theme: String?
+    /// classic or drop, as `--look`; classic by default.
+    public var look: String?
     public var say: Bool?
     /// Stay up after every question is answered, until the X. By default a card closes itself
     /// once its last question (buttons, choice, text field, checklist) is answered.
@@ -22,7 +24,12 @@ public struct CardDocument: Codable, Equatable, Sendable {
         self.rows = rows
     }
 
-    static let keys: Set<String> = ["title", "rows", "app", "color", "theme", "say", "keep"]
+    static let keys: Set<String> = ["title", "rows", "app", "color", "theme", "look", "say", "keep"]
+
+    /// The look as a value: classic unless it names drop.
+    public var arrowLook: ArrowLook { look.flatMap { try? ArrowLook.parse($0) } ?? .classic }
+    /// The colour's name: its own, else the look's default.
+    public var colorName: String { color ?? arrowLook.defaultColor }
 
     /// The rows that ask something, by index.
     public var questions: [Int] { rows.indices.filter { rows[$0].type.answers } }

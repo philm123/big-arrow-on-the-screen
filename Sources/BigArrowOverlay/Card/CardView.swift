@@ -13,15 +13,15 @@ public final class CardView: NSView {
 
     public init(document: CardDocument, color: ArrowColor, events: CardEvents, maxHeight: CGFloat) throws {
         self.document = document
-        self.style = CardStyle(color: color)
+        self.style = CardStyle(color: color, look: document.arrowLook)
         self.events = events
         super.init(frame: .zero)
         wantsLayer = true
-        layer?.cornerRadius = CardStyle.corner
+        layer?.cornerRadius = style.corner
         layer?.masksToBounds = true
-        // The sign's border: its contrast colour (white on dark colours) all round.
-        layer?.borderWidth = CardStyle.border
-        layer?.borderColor = style.onTint.cgColor
+        // The sign's border: its contrast colour (white on dark colours) all round; ink in the Drop look.
+        layer?.borderWidth = style.border
+        layer?.borderColor = style.edge.cgColor
         rows = try document.rows.map { row in
             RowContainer(row: row, content: try RowFactory.view(for: row, style: style, events: events), style: style, events: events)
         }
@@ -32,7 +32,7 @@ public final class CardView: NSView {
     required init?(coder: NSCoder) { preconditionFailure("cards are built in code") }
 
     func build(maxHeight: CGFloat) throws {
-        let header = CardHeader(title: document.title, style: style) { [events] in events.close() }
+        let header = CardHeader(title: style.cased(document.title), style: style) { [events] in events.close() }
         let body = Stack.vertical(rows, spacing: CardStyle.rowSpacing)
         body.edgeInsets = NSEdgeInsets(top: 22, left: 0, bottom: 24, right: 0)
         rows.forEach { $0.widthAnchor.constraint(equalTo: body.widthAnchor).isActive = true }
@@ -117,7 +117,7 @@ public final class CardView: NSView {
     public override func layout() {
         super.layout()
         effectiveAppearance.performAsCurrentDrawingAppearance {
-            layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
+            layer?.backgroundColor = style.isDrop ? CardStyle.nsColor(DropInk.paper).cgColor : NSColor.windowBackgroundColor.cgColor
         }
     }
 }

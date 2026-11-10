@@ -18,6 +18,9 @@ struct OverlayLayers {
     let signEdge = CALayer()
     let sign = CALayer()
     let signText = CALayer()
+    /// The Drop look's ink splat at the tip, shown only while the arrow lands (see `Animator`).
+    let splat = CALayer()
+    let look: ArrowLook
     /// Display-local top-left points to the panel's bottom-left points.
     let flip: CGAffineTransform
 
@@ -31,8 +34,8 @@ struct OverlayLayers {
     public static let shadowReach: CGFloat = shadowRadius * 2 + shadowDrop
 
     init(layout: OverlayLayout, sign image: SignImage, appearance: SignAppearance) {
-        let color = appearance.color
-        let height = layout.display.frame.height
+        look = appearance.look
+        let (color, height) = (appearance.color, layout.display.frame.height)
         let bounds = CGRect(origin: .zero, size: layout.display.frame.size)
         flip = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: height)
         let (shaft, head) = (Self.transformed(layout.arrow.shaftPath, flip), Self.transformed(layout.arrow.headPath, flip))
@@ -44,8 +47,7 @@ struct OverlayLayers {
         let colorShaft = Self.stroked(shaft, color: color.cgColor, width: stroke)
         let colorHead = Self.filled(head, color: color.cgColor, outline: 0)
         let colorRoot = Self.filled(rootPath, color: color.cgColor, outline: 0)
-        shaftLayers = shaftBorders + [colorShaft]
-        headLayers = headBorders + [colorHead]
+        (shaftLayers, headLayers) = (shaftBorders + [colorShaft], headBorders + [colorHead])
         let tip = layout.arrow.tip.applying(flip)
         for layer in [root, markGroup] + shaftLayers + headLayers { layer.frame = bounds }
         for layer in headLayers { Self.pin(layer, at: tip, in: bounds) }
@@ -56,16 +58,17 @@ struct OverlayLayers {
             layer.contentsScale = layout.display.scale
             layer.frame = signFrame
         }
-        if appearance.border.hasShadow { Self.shadow(root) }
+        finish(appearance, tip: tip)
         // Every black edge (the sign's too) below every white border, or a black line cuts through the white.
         let parts = [shaftBorders, headBorders, rootBorders]
         let edges = parts.flatMap { $0.dropLast() }
         root.sublayers = [markGroup] + edges + [signEdge] + parts.compactMap(\.last)
-            + [sign, colorShaft, colorRoot, colorHead, signText]
+            + [sign, colorShaft, colorRoot, colorHead, signText, splat]
     }
 
     /// The border layers of one part, outermost first.
     static func borders(_ look: SignAppearance, _ make: (CGColor, CGFloat) -> CAShapeLayer) -> [CAShapeLayer] {
+        if look.look == .drop { return [make(look.borderTint.cgColor, DropInk.outline)] }
         switch look.border {
         case .shadow: [make(look.borderTint.cgColor, outlineWidth)]
         case .whiteBlack: [make(look.edgeTint.cgColor, outlineWidth + edgeWidth), make(look.borderTint.cgColor, outlineWidth)]
@@ -132,7 +135,8 @@ struct OverlayLayers {
         case .none:
             return []
         case .box(let rect):
-            path = CGPath(roundedRect: rect, cornerWidth: 12, cornerHeight: 12, transform: [flip])
+            let corner: CGFloat = appearance.look == .drop ? 0 : 12
+            path = CGPath(roundedRect: rect, cornerWidth: corner, cornerHeight: corner, transform: [flip])
         case .ring(let center, let radius):
             let rect = CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2)
             path = CGPath(ellipseIn: rect, transform: [flip])

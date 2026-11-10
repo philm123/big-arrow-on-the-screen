@@ -76,7 +76,8 @@ public enum SignRenderer {
     static func fit(
         _ text: SignText, appearance: SignAppearance, display: Display, maxWidth: CGFloat
     ) -> (SignTextLayout, SignTextLayout.Style) {
-        var style = SignTextLayout.Style(fontSize: appearance.size.metrics.fontSize, appearance: appearance, scale: display.scale)
+        let start = (appearance.size.metrics.fontSize * appearance.look.fontScale).rounded()
+        var style = SignTextLayout.Style(fontSize: start, appearance: appearance, scale: display.scale)
         var layout = SignTextLayout(text, style: style, maxWidth: maxWidth)
         while layout.lines > ArrowMetrics.maximumLines, style.fontSize > ArrowMetrics.minimumFontSize {
             let smaller = max(style.fontSize - 2, ArrowMetrics.minimumFontSize)
@@ -90,7 +91,7 @@ public enum SignRenderer {
     static func drawCross(in context: CGContext, center: CGPoint, diameter: CGFloat, appearance: SignAppearance) {
         let circle = CGRect(x: center.x - diameter / 2, y: center.y - diameter / 2, width: diameter, height: diameter)
         context.setFillColor(appearance.closeTint.cgColor)
-        context.fillEllipse(in: circle)
+        if appearance.look == .drop { context.fill(circle) } else { context.fillEllipse(in: circle) }
         let arm = diameter * 0.2
         context.setStrokeColor(appearance.closeXTint.cgColor)
         context.setLineWidth(max(2.5, diameter * 0.11))
@@ -116,13 +117,14 @@ public enum SignRenderer {
     /// The thin black line of `--border white-black` and `black`; nothing for the default.
     static func drawEdge(in context: CGContext, pill: CGSize, appearance: SignAppearance) {
         let width = edgeWidth(appearance.border)
-        guard width > 0 else { return }
+        guard width > 0, appearance.look == .classic else { return }
         let shape = Pill(rect: CGRect(origin: .zero, size: pill), corners: appearance.corners)
         stroke(shape, in: context, line: (width, appearance.edgeTint), fill: nil)
     }
 
     /// Fill and white border, inside the edge. It overlaps the edge by half a point so no seam shows.
     static func drawBody(in context: CGContext, pill: CGSize, appearance: SignAppearance) {
+        if appearance.look == .drop { return drawDropBody(in: context, pill: pill, appearance: appearance) }
         let inset = max(0, edgeWidth(appearance.border) - seamOverlap)
         let shape = Pill(rect: CGRect(origin: .zero, size: pill).insetBy(dx: inset, dy: inset), corners: appearance.corners)
         if appearance.border == .black {

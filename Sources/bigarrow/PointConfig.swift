@@ -25,6 +25,10 @@ struct PointConfig {
     let style: ArrowStyle
     let color: ArrowColor
     let corners: SignCorners
+    /// `--look`: classic or drop; it picks the default colour and corners.
+    let look: ArrowLook
+    /// `--sound`: a short hit as the arrow lands.
+    let sound: Bool
     let shape: ArrowShape
     let noAnimation: Bool
     let border: ArrowBorder
@@ -61,20 +65,19 @@ struct PointConfig {
         forced = try ApproachDirection.parse(look.from)
         size = try ArrowSize.parse(look.size)
         style = try ArrowStyle.parse(look.style)
-        color = try ArrowColor.parse(look.color)
-        corners = try SignCorners.parse(look.corners)
+        (self.look, color, corners) = try Self.styled(look)
         shape = try ArrowShape.parse(look.shape)
         (noAnimation, border) = (look.noAnimation, try ArrowBorder.parse(look.border))
         tints = try Self.tints(look)
         click = try Self.click(behaviour)
         closeButton = behaviour.closeButton
         durationExplicit = behaviour.duration != nil
-        card = try Self.card(behaviour, app: options.app ?? options.window, color: color, stdinTaken: stdinSnapshot != nil)
+        card = try Self.card(behaviour, app: options.app ?? options.window, style: (color, self.look), stdinTaken: stdinSnapshot != nil)
         replyFile = behaviour.replyFile
         let waitsForHuman = click != .off || closeButton || mode == .background || card != nil
         duration = behaviour.duration ?? (waitsForHuman ? Self.humanWaitDuration : Self.defaultDuration)
         guard duration >= 0, duration.isFinite else { throw BigArrowError.badInput("--duration must be 0 or more seconds") }
-        (say, voice, json, dryRun) = (behaviour.say, behaviour.voice, behaviour.json, behaviour.dryRun)
+        (say, voice, json, dryRun, sound) = (behaviour.say, behaviour.voice, behaviour.json, behaviour.dryRun, behaviour.sound)
         detach = behaviour.detach || mode == .background
         png = behaviour.png
         raise = home != nil && !options.noRaise
@@ -85,19 +88,30 @@ struct PointConfig {
     var appearance: SignAppearance {
         var appearance = SignAppearance(color: color, size: size, corners: corners)
         appearance.border = border
+        appearance.look = look
         for (path, tint) in tints { appearance[keyPath: path] = tint }
         appearance.closeMark = closeButton ? .cross : .none
         return appearance
     }
 
-    /// The `--card`, in the arrow's colour and beside the target's app unless it names its own.
-    static func card(_ behaviour: BehaviourOptions, app: String?, color: ArrowColor, stdinTaken: Bool) throws -> CardDocument? {
+    /// `--look` with the colour and corners it implies unless `--color` and `--corners` say otherwise.
+    static func styled(_ options: LookOptions) throws -> (ArrowLook, ArrowColor, SignCorners) {
+        let look = try ArrowLook.parse(options.look)
+        let color = try ArrowColor.parse(options.color ?? look.defaultColor)
+        return (look, color, try SignCorners.parse(options.corners ?? look.defaultCorners))
+    }
+
+    /// The `--card`, in the arrow's colour and look and beside the target's app unless it names its own.
+    static func card(
+        _ behaviour: BehaviourOptions, app: String?, style: (color: ArrowColor, look: ArrowLook), stdinTaken: Bool
+    ) throws -> CardDocument? {
         guard let path = behaviour.card else { return nil }
         guard !behaviour.follow, !behaviour.untilClick, !behaviour.untilAnyClick else {
             throw BigArrowError.badInput("--card does not combine with --follow, --until-click or --until-any-click")
         }
         var card = try CardInput.load(path, stdinTaken: stdinTaken)
-        card.color = card.color ?? color.hex
+        card.color = card.color ?? style.color.hex
+        card.look = card.look ?? style.look.rawValue
         card.app = card.app ?? app
         return card
     }

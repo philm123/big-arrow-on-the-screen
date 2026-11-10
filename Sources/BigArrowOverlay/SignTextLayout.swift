@@ -65,7 +65,7 @@ struct SignTextLayout {
         let scale: CGFloat
 
         func string(_ text: SignText, maxWidth: CGFloat, copied: Int?) -> NSAttributedString {
-            let font = SignRenderer.font(fontSize)
+            let font = SignRenderer.font(fontSize, look: appearance.look)
             let paragraph = NSMutableParagraphStyle()
             paragraph.alignment = .center
             paragraph.lineBreakMode = .byWordWrapping
@@ -77,7 +77,7 @@ struct SignTextLayout {
             for segment in text.segments {
                 switch segment {
                 case .plain(let plain):
-                    result.append(NSAttributedString(string: plain, attributes: attributes))
+                    result.append(NSAttributedString(string: appearance.look == .drop ? plain.uppercased() : plain, attributes: attributes))
                 case .copy(let value):
                     let look = CopyChip(value: value, fontSize: fontSize, maxWidth: maxWidth, appearance: appearance)
                     let attachment = look.attachment(icon: chip == copied ? .check : .copy, font: font, scale: scale)
