@@ -69,7 +69,7 @@ struct OverlayLayers {
     /// The border layers of one part, outermost first.
     static func borders(_ look: SignAppearance, _ make: (CGColor, CGFloat) -> CAShapeLayer) -> [CAShapeLayer] {
         if look.look == .drop { return [make(look.borderTint.cgColor, DropInk.outline)] }
-        switch look.border {
+        return switch look.border {
         case .shadow: [make(look.borderTint.cgColor, outlineWidth)]
         case .whiteBlack: [make(look.edgeTint.cgColor, outlineWidth + edgeWidth), make(look.borderTint.cgColor, outlineWidth)]
         case .black: [make(look.edgeTint.cgColor, edgeWidth)]
